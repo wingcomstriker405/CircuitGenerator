@@ -1,0 +1,189 @@
+{
+  "bodies": [
+    {
+      "childs": [
+        {
+          "color": "222222",
+          "controller": {
+            "active": false,
+            "controllers": [
+              {
+                "id": 76
+              }
+            ],
+            "id": 75,
+            "joints": null,
+            "mode": 0
+          },
+          "pos": {
+            "x": -14,
+            "y": -9,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        },
+        {
+          "color": "19E753",
+          "controller": {
+            "active": false,
+            "controllers": null,
+            "id": 76,
+            "joints": null,
+            "mode": 1
+          },
+          "pos": {
+            "x": -14,
+            "y": -10,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        },
+        {
+          "color": "0A3EE2",
+          "controller": {
+            "active": false,
+            "controllers": [
+              {
+                "id": 73
+              },
+              {
+                "id": 74
+              }
+            ],
+            "id": 61,
+            "joints": null,
+            "mode": 0
+          },
+          "pos": {
+            "x": -12,
+            "y": -8,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        },
+        {
+          "color": "E2DB13",
+          "controller": {
+            "active": false,
+            "controllers": [
+              {
+                "id": 72
+              },
+              {
+                "id": 75
+              }
+            ],
+            "id": 62,
+            "joints": null,
+            "mode": 0
+          },
+          "pos": {
+            "x": -14,
+            "y": -8,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        },
+        {
+          "color": "D02525",
+          "controller": {
+            "active": false,
+            "controllers": [
+              {
+                "id": 73
+              },
+              {
+                "id": 74
+              }
+            ],
+            "id": 63,
+            "joints": null,
+            "mode": 0
+          },
+          "pos": {
+            "x": -13,
+            "y": -8,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        },
+        {
+          "color": "2CE6E6",
+          "controller": {
+            "active": false,
+            "controllers": null,
+            "id": 72,
+            "joints": null,
+            "mode": 2
+          },
+          "pos": {
+            "x": -13,
+            "y": -10,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        },
+        {
+          "color": "222222",
+          "controller": {
+            "active": false,
+            "controllers": [
+              {
+                "id": 72
+              },
+              {
+                "id": 75
+              }
+            ],
+            "id": 73,
+            "joints": null,
+            "mode": 2
+          },
+          "pos": {
+            "x": -12,
+            "y": -9,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        },
+        {
+          "color": "222222",
+          "controller": {
+            "active": false,
+            "controllers": [
+              {
+                "id": 76
+              }
+            ],
+            "id": 74,
+            "joints": null,
+            "mode": 0
+          },
+          "pos": {
+            "x": -13,
+            "y": -9,
+            "z": 3
+          },
+          "shapeId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+          "xaxis": 1,
+          "zaxis": -2
+        }
+      ]
+    }
+  ],
+  "version": 4
+}
