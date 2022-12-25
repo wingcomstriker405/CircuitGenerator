@@ -1,6 +1,6 @@
 import cg.common.Gate;
 import cg.common.LogicComponent;
-import cg.component.AdderNBit;
+import cg.component.RippleCarryAdder;
 import cg.synthesis.Circuit;
 import cg.synthesis.SynthesisContext;
 
@@ -16,7 +16,7 @@ public class Main
     {
         // this path can be substituted for an actual blueprint file so the creation can be built directly
         Path of = Path.of("blueprint.json");
-        LogicComponent component = new AdderNBit("my adder", 8);
+        LogicComponent component = new RippleCarryAdder("my adder", 8);
         String build = build(component);
         Files.writeString(of, build);
     }

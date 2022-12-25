@@ -5,9 +5,9 @@ import cg.common.Vec;
 
 import java.util.List;
 
-public class AdderNBit extends ComplexComponent
+public class RippleCarryAdder extends ComplexComponent
 {
-    public AdderNBit(String name, int size)
+    public RippleCarryAdder(String name, int size)
     {
         // configure io
         super(
