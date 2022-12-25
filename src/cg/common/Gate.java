@@ -111,4 +111,12 @@ public class Gate
     {
         point(point().move(dx, dy, dz));
     }
+
+    @Override
+    public String toString()
+    {
+        return "Gate{" +
+                "point=" + point +
+                '}';
+    }
 }

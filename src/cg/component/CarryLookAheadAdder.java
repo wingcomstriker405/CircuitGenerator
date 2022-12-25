@@ -1,10 +1,9 @@
 package cg.component;
 
-import cg.common.*;
-import cg.synthesis.Circuit;
-import cg.synthesis.SynthesisContext;
+import cg.common.DynamicComponent;
+import cg.common.Operation;
+import cg.common.Vec;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CarryLookAheadAdder extends DynamicComponent

@@ -112,10 +112,14 @@ public abstract class ComplexComponent extends LogicComponent
         Map<String, List<Gate>> inputs = circuits.get("<").outputs();
         Map<String, List<Gate>> outputs = circuits.get(">").inputs();
 
-        return new Circuit(
+        Circuit circuit = new Circuit(
                 inputs,
                 outputs,
                 gates
         );
+        layout(circuit, circuits);
+        return circuit;
     }
+
+    protected abstract void layout(Circuit circuit, Map<String, Circuit> circuits);
 }
