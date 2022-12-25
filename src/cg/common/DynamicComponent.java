@@ -81,8 +81,12 @@ public abstract class DynamicComponent extends LogicComponent
             collect.get(connection.start).outputs().add(id);
         }
         List<Gate> all = new ArrayList<>(collect.values());
-        return new Circuit(inputs, outputs, all);
+        Circuit circuit = new Circuit(inputs, outputs, all);
+        layout(circuit, collect);
+        return circuit;
     }
+
+    protected abstract void layout(Circuit circuit, Map<String, Gate> mapping);
 
     private static Map<String, List<Gate>> fromGateWay(SynthesisContext context, GateWay way)
     {
