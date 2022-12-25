@@ -77,6 +77,10 @@ public abstract class DynamicComponent extends LogicComponent
 
         for (Connection connection : this.connections)
         {
+            if(!collect.containsKey(connection.end))
+                throw new RuntimeException("No gate with name " + connection.end);
+            if(!collect.containsKey(connection.start))
+                throw new RuntimeException("No gate with name " + connection.start);
             int id = collect.get(connection.end).id();
             collect.get(connection.start).outputs().add(id);
         }
