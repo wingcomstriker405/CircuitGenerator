@@ -117,7 +117,7 @@ public class Memory extends DynamicComponent
             mapping.get("n" + i).point(new Point(size + i, 1, 0));
         // - selection
         for (int i = 0; i < 1 << bits; i++)
-            mapping.get("a" + i).point(new Point(size + i, 2, 0));
+            mapping.get("a" + i).point(new Point(size + i % bits, 2 + i / bits, 0));
         // write
         mapping.get("w0").point(new Point(size + bits, 0, 0));
         // cells
