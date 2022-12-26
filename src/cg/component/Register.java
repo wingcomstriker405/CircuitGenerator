@@ -32,7 +32,7 @@ public class Register extends DynamicComponent
         for (int i = 0; i < size; i++)
             add("g", i, Operation.AND);
 
-        add("s", Operation.OR);
+        add("s", Operation.AND);
 
         // connect the set bit with the gatekeepers
         for (int i = 0; i < size; i++)
