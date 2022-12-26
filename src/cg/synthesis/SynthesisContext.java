@@ -1,22 +1,45 @@
 package cg.synthesis;
 
-import cg.common.*;
+import cg.common.BluePrint;
+import cg.common.BlueprintParser;
+import cg.common.Gate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class SynthesisContext
 {
     private Counter counter;
     private final Map<String, BluePrint> cache = new HashMap<>();
-
-    public SynthesisContext()
+    private final List<String> names = new ArrayList<>();
+    private final Map<String, String> colorings;
+    public SynthesisContext(Map<String, String> colorings)
     {
         this.counter = new Counter();
+        this.colorings = colorings;
+    }
+
+    public void push(String name)
+    {
+        this.names.add(name);
+    }
+
+    public void pop()
+    {
+        this.names.remove(this.names.size() - 1);
+    }
+
+    public String getColor()
+    {
+        String key = String.join("-", this.names);
+        return this.colorings.entrySet()
+                .stream()
+                .filter(e -> key.matches(e.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse("000000");
     }
 
     public int next()
@@ -24,47 +47,13 @@ public class SynthesisContext
         return this.counter.next();
     }
 
-    private BluePrint load(String path)
+    public BluePrint load(String path)
     {
         if (this.cache.containsKey(path))
             return this.cache.get(path);
         BluePrint normalize = normalize(BlueprintParser.parse(path));
         this.cache.put(path, normalize);
         return normalize;
-    }
-
-    public Circuit instantiate(String path, List<Pin> ins, List<Pin> outs)
-    {
-        BluePrint bp = load(path);
-        int[] ids = IntStream.range(0, bp.gates().size())
-                .map(i -> this.counter.next())
-                .toArray();
-        List<Gate> instances = new ArrayList<>();
-        for (Gate gate : bp.gates())
-        {
-            instances.add(new Gate(
-                    gate.op(),
-                    ids[gate.id()],
-                    gate.color(),
-                    new ArrayList<>(gate.outputs()
-                            .stream()
-                            .map(i -> ids[i])
-                            .toList()),
-                    gate.point()
-            ));
-        }
-
-        Map<String, List<Gate>> a = ins.stream()
-                .collect(Collectors.toMap(Vec::getName, p -> instances.stream()
-                        .filter(i -> i.color().equals(p.getColor()))
-                        .toList()));
-
-        Map<String, List<Gate>> b = outs.stream()
-                .collect(Collectors.toMap(Vec::getName, p -> instances.stream()
-                        .filter(i -> i.color().equals(p.getColor()))
-                        .toList()));
-
-        return new Circuit(a, b, instances);
     }
 
     private BluePrint normalize(BluePrint bp)

@@ -65,6 +65,7 @@ public abstract class DynamicComponent extends LogicComponent
     @Override
     public Circuit synthesise(SynthesisContext context)
     {
+        context.push(getName());
         Map<String, Gate> collect = new HashMap<>();
 
         Map<String, List<Gate>> inputs = fromGateWay(context, this.in);
@@ -98,8 +99,10 @@ public abstract class DynamicComponent extends LogicComponent
         }
         List<Gate> all = new ArrayList<>(collect.values());
         all.addAll(rest);
+        colorize(context, all);
         Circuit circuit = new Circuit(inputs, outputs, all);
         layout(circuit, collect, circuits);
+        context.pop();
         return circuit;
     }
 

@@ -42,5 +42,17 @@ public abstract class LogicComponent
                 .orElseThrow();
     }
 
+    protected void colorize(SynthesisContext context, List<Gate> gates)
+    {
+        String color = context.getColor();
+        for (Gate gate : gates)
+        {
+            if(gate.color().equals("000000"))
+            {
+                gate.color(color);
+            }
+        }
+    }
+
     public abstract Circuit synthesise(SynthesisContext context);
 }

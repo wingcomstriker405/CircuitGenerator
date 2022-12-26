@@ -17,12 +17,12 @@ public class CircuitBuilder
 
     public static String build(LogicComponent component)
     {
-        return build(component, false);
+        return build(component, false, null);
     }
 
-    public static String build(LogicComponent component, boolean optimize)
+    public static String build(LogicComponent component, boolean optimize, Map<String, String> colorings)
     {
-        SynthesisContext context = new SynthesisContext();
+        SynthesisContext context = new SynthesisContext(colorings);
         Circuit synthesise = component.synthesise(context);
 
         System.out.println("SYNTHESES RESULTS");
