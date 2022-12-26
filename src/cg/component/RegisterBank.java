@@ -129,7 +129,7 @@ public class RegisterBank extends DynamicComponent
     {
         // move registers
         for (int i = 0; i < this.amount; i++)
-            circuits.get("r" + i).move(0, 1 + 4 * i, 0);
+            circuits.get("r" + i).move(0, 1 + 5 * i, 0);
 
         // move selectors
         circuits.get("sa").move(this.size, 1, 0);
@@ -153,16 +153,16 @@ public class RegisterBank extends DynamicComponent
         {
             for (int j = 0; j < this.size; j++)
             {
-                mapping.get("ac" + i + "_" + j).move(j, this.amount * 4 + 1 + i, 0);
-                mapping.get("bc" + i + "_" + j).move(this.size + j, this.amount * 4 + 1 + i, 0);
+                mapping.get("ac" + i + "_" + j).move(j, this.amount * 5 + 1 + i, 0);
+                mapping.get("bc" + i + "_" + j).move(this.size + j, this.amount * 5 + 1 + i, 0);
             }
         }
 
         // move outputs
         for (int i = 0; i < this.size; i++)
         {
-            mapping.get("a" + i).move(i, this.amount * 5 + 2, 0);
-            mapping.get("b" + i).move(this.size + i, this.amount * 5 + 2, 0);
+            mapping.get("a" + i).move(i, this.amount * 6 + 2, 0);
+            mapping.get("b" + i).move(this.size + i, this.amount * 6 + 2, 0);
         }
 
         // move combiners
