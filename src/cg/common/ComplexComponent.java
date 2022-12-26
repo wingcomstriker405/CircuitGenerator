@@ -102,11 +102,11 @@ public abstract class ComplexComponent extends LogicComponent
         }
 
         // collect all the gates
-        List<Gate> gates = circuits.values()
+        List<Gate> gates = new ArrayList<>(circuits.values()
                 .stream()
                 .map(Circuit::gates)
                 .flatMap(List::stream)
-                .toList();
+                .toList());
 
         // retrieve io gates
         Map<String, List<Gate>> inputs = circuits.get("<").outputs();
