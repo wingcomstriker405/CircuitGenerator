@@ -48,20 +48,19 @@ public class RippleCarryAdder extends ComplexComponent
     protected void layout(Circuit circuit, Map<String, Circuit> components)
     {
         int size = circuit.inputs().get("a").size();
+        int mod = size / 3;
         for (int i = 0; i < size; i++)
         {
             Circuit c = components.get("a" + i);
-            c.move(i * 3, 1, 0);
+            c.move(i * 3 % mod, 1 + i / mod * 3, 0);
         }
 
-        int start = 0;
-        for (Vec vec : getInputs())
+        List<Gate> a = circuit.inputs().get("a");
+        List<Gate> b = circuit.inputs().get("b");
+        for(int i = 0; i < a.size(); i++)
         {
-            List<Gate> gates = circuit.inputs().get(vec.getName());
-            for (int i = 0; i < vec.getSize(); i++)
-            {
-                gates.get(i).move(start++, 0, 0);
-            }
+            a.get(i).move(i, 0, 0);
+            b.get(i).move(i, 0, 1);
         }
 
         int end = 0;
@@ -70,7 +69,7 @@ public class RippleCarryAdder extends ComplexComponent
             List<Gate> gates = circuit.outputs().get(vec.getName());
             for (int i = 0; i < vec.getSize(); i++)
             {
-                gates.get(i).move(end++, 4, 0);
+                gates.get(i).move(end++, size / mod * 3 + 4, 0);
             }
         }
     }
