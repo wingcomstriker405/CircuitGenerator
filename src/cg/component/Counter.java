@@ -64,6 +64,10 @@ public class Counter extends DynamicComponent
         for (int i = 0; i < size; i++)
             connect("b", i, "r_i", i);
 
+        // connect register to output
+        for (int i = 0; i < size; i++)
+            connect("r_i", i, "o", i);
+
         // add diff gates
         for (int i = 0; i < size; i++)
             add("d", i, Operation.XOR);
