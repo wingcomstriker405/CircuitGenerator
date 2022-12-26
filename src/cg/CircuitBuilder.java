@@ -13,7 +13,14 @@ import java.util.Set;
 
 public class CircuitBuilder
 {
+    private CircuitBuilder(){}
+
     public static String build(LogicComponent component)
+    {
+        return build(component, false);
+    }
+
+    public static String build(LogicComponent component, boolean optimize)
     {
         SynthesisContext context = new SynthesisContext();
         Circuit synthesise = component.synthesise(context);
@@ -22,15 +29,18 @@ public class CircuitBuilder
         System.out.println("GATES: " + synthesise.gates().size());
         System.out.println("CONNECTIONS: " + synthesise.gates().stream().map(Gate::outputs).mapToInt(List::size).sum());
 
-        Set<Integer> io = new HashSet<>();
-        synthesise.inputs().forEach((a, b) -> b.forEach(c -> io.add(c.id())));
-        synthesise.outputs().forEach((a, b) -> b.forEach(c -> io.add(c.id())));
+        if(optimize)
+        {
+            Set<Integer> io = new HashSet<>();
+            synthesise.inputs().forEach((a, b) -> b.forEach(c -> io.add(c.id())));
+            synthesise.outputs().forEach((a, b) -> b.forEach(c -> io.add(c.id())));
 
-        PassThroughOptimizer.check(io, synthesise.gates());
+            PassThroughOptimizer.check(io, synthesise.gates());
 
-        System.out.println("OPTIMIZATION RESULTS");
-        System.out.println("GATES: " + synthesise.gates().size());
-        System.out.println("CONNECTIONS: " + synthesise.gates().stream().map(Gate::outputs).mapToInt(List::size).sum());
+            System.out.println("OPTIMIZATION RESULTS");
+            System.out.println("GATES: " + synthesise.gates().size());
+            System.out.println("CONNECTIONS: " + synthesise.gates().stream().map(Gate::outputs).mapToInt(List::size).sum());
+        }
 
         getRandomizedColor(synthesise.inputs());
         getRandomizedColor(synthesise.outputs());
