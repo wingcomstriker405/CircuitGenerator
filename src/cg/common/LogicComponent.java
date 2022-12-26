@@ -39,7 +39,7 @@ public abstract class LogicComponent
                 .stream()
                 .filter(v -> v.getName().equals(name))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException(name + " <-> " + vecs));
     }
 
     public abstract Circuit synthesise(SynthesisContext context);
