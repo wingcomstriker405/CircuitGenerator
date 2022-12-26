@@ -100,7 +100,7 @@ public class CarryLookAheadAdder extends DynamicComponent
     }
 
     @Override
-    protected void layout(Circuit circuit, Map<String, Gate> mapping)
+    protected void layout(Circuit circuit, Map<String, Gate> mapping, Map<String, Circuit> circuits)
     {
         List<Gate> a = circuit.inputs().get("a");
         List<Gate> b = circuit.inputs().get("b");

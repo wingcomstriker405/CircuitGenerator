@@ -40,7 +40,7 @@ public class Selector extends DynamicComponent
     }
 
     @Override
-    protected void layout(Circuit circuit, Map<String, Gate> mapping)
+    protected void layout(Circuit circuit, Map<String, Gate> mapping, Map<String, Circuit> circuits)
     {
         int bits = circuit.inputs().get("i").size();
         for (int i = 0; i < bits; i++)

@@ -101,7 +101,7 @@ public class Memory extends DynamicComponent
     }
 
     @Override
-    protected void layout(Circuit circuit, Map<String, Gate> mapping)
+    protected void layout(Circuit circuit, Map<String, Gate> mapping, Map<String, Circuit> circuits)
     {
         int size = circuit.inputs().get("i").size();
         int bits = circuit.inputs().get("s").size();

@@ -59,7 +59,7 @@ public class Register extends DynamicComponent
     }
 
     @Override
-    protected void layout(Circuit circuit, Map<String, Gate> mapping)
+    protected void layout(Circuit circuit, Map<String, Gate> mapping, Map<String, Circuit> circuits)
     {
         int size = circuit.inputs().get("i").size();
         for (int i = 0; i < size; i++)

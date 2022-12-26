@@ -51,7 +51,7 @@ public class Selection extends DynamicComponent
         return vectors;
     }
     @Override
-    protected void layout(Circuit circuit, Map<String, Gate> mapping)
+    protected void layout(Circuit circuit, Map<String, Gate> mapping, Map<String, Circuit> circuits)
     {
         int inputs = circuit.inputs().size() - 1;
         int size = circuit.inputs().get("i0_").size();
