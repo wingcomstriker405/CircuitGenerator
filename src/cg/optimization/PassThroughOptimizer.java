@@ -81,7 +81,5 @@ public class PassThroughOptimizer
         while (changed);
 
         gates.removeIf(g -> removed.contains(g.id()));
-
-        System.out.println("GATES TO OPTIMIZE: " + optimize);
     }
 }

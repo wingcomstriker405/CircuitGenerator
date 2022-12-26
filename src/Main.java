@@ -18,7 +18,7 @@ public class Main
     public static void main(String[] args) throws IOException
     {
         // this path can be substituted for an actual blueprint file so the creation can be built directly
-        Path of = Path.of("blueprint.json");
+        Path of = Path.of("C:\\Users\\admin\\AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_76561198238909378\\Blueprints\\efce645e-7e0c-4d4b-8a84-864b0f66f5e2\\blueprint.json");
         LogicComponent component = new CarryLookAheadAdder("my adder", 120);
 //        LogicComponent component = new FullAdder("my adder");
 //        LogicComponent component = new Register("my register", 64);
@@ -38,11 +38,19 @@ public class Main
         SynthesisContext context = new SynthesisContext();
         Circuit synthesise = component.synthesise(context);
 
+        System.out.println("SYNTHESES RESULTS");
+        System.out.println("GATES: " + synthesise.gates().size());
+        System.out.println("CONNECTIONS: " + synthesise.gates().stream().map(Gate::outputs).mapToInt(List::size).sum());
+
         Set<Integer> io = new HashSet<>();
         synthesise.inputs().forEach((a, b) -> b.forEach(c -> io.add(c.id())));
         synthesise.outputs().forEach((a, b) -> b.forEach(c -> io.add(c.id())));
 
         PassThroughOptimizer.check(io, synthesise.gates());
+
+        System.out.println("OPTIMIZATION RESULTS");
+        System.out.println("GATES: " + synthesise.gates().size());
+        System.out.println("CONNECTIONS: " + synthesise.gates().stream().map(Gate::outputs).mapToInt(List::size).sum());
 
         getRandomizedColor(synthesise.inputs());
         getRandomizedColor(synthesise.outputs());
