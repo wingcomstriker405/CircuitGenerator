@@ -50,6 +50,6 @@ public class Selector extends DynamicComponent
             mapping.get("n" + i).point(new Point(i, 1, 0));
 
         for (int i = 0; i < 1 << bits; i++)
-            mapping.get("o" + i).point(new Point(i, 2, 0));
+            mapping.get("o" + i).point(new Point(i % bits, 2 + i / bits, 0));
     }
 }
