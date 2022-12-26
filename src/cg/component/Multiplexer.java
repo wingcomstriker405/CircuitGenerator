@@ -7,8 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Multiplexer extends DynamicComponent
+public class Multiplexer extends ComplexComponent
 {
+
+    private final int size;
+    private final int inputs;
+    private final int bits;
 
     public Multiplexer(String name, int size, int inputs, int bits)
     {
@@ -20,54 +24,29 @@ public class Multiplexer extends DynamicComponent
                 )
         );
 
+        this.size = size;
+        this.inputs = inputs;
+        this.bits = bits;
+
         if(1 << bits < inputs)
             throw new RuntimeException("Too many inputs / too few selection bits!");
 
-        // create the selector
+        // add selector and selection
+        add(new Selection("selection", size, inputs));
+        add(new Selector("selector", bits));
 
-        // add negations
-        for (int i = 0; i < bits; i++)
-            add("n", i, Operation.NOR);
-
-        // connect to negation
-        for (int i = 0; i < bits; i++)
-            connect("s", i, "n", i);
-
-        // add negations
-        for (int i = 0; i < 1 << bits; i++)
-            add("a", i, Operation.AND);
-
-        // connect all the gates
-        for (int i = 0; i < 1 << bits; i++)
-        {
-            for (int k = 0; k < bits; k++)
-            {
-                String source = (i >> k) % 2 == 1 ? "s" : "n";
-                connect(source, k, "a", i);
-            }
-        }
-
-        // add combination
-        for (int i = 0; i < size; i++)
-            add("c", i, Operation.OR);
-
-        // create the selection
+        // wire inputs
         for (int i = 0; i < inputs; i++)
-        {
-            String p = "i" + i + "_";
-            String s = "p" + i + "_";
-            for (int k = 0; k < size; k++)
-            {
-                add(s, k, Operation.AND);
-                connect("a", i, s, k);
-                connect(p, k, s, k);
-                connect(s, k, "c", k);
-            }
-        }
+            connect("<" , "i" + i + "_", "selection", "i" + i + "_");
 
-        // connect to outputs
-        for (int i = 0; i < size; i++)
-            connect("c", i, "o", i);
+        // wire outputs
+        connect("selection", "o", ">", "o");
+
+        // wire address
+        connect("<", "s",  "selector", "i");
+
+        // wire selector and selection
+        connect("selector", "o", "selection", "s");
     }
 
     private static List<Vec> constructInputs(int size, int inputs, int bits)
@@ -80,39 +59,30 @@ public class Multiplexer extends DynamicComponent
     }
 
     @Override
-    protected void layout(Circuit circuit, Map<String, Gate> mapping)
+    protected void layout(Circuit circuit, Map<String, Circuit> circuits)
     {
-        int inputs = circuit.inputs().size() - 1;
-        int size = circuit.inputs().get("i0_").size();
-        // move the inputs and selection
-        for (int i = 0; i < inputs; i++)
+        // move selector and selection
+        circuits.get("selection").move(0, 1, 0);
+        circuits.get("selector").move(this.size + 1, 1, 0);
+
+        // move address
+        List<Gate> s = circuit.inputs().get("s");
+        for (int i = 0; i < s.size(); i++)
+            s.get(i).move(this.size + 1 + i, 0, 0);
+
+        // move inputs
+        for (int i = 0; i < this.inputs; i++)
         {
-            for (int k = 0; k < size; k++)
+            List<Gate> gates = circuit.inputs().get("i" + i + "_");
+            for (int k = 0; k < gates.size(); k++)
             {
-                mapping.get("i" + i + "_" + k).point(new Point(k, 0, i));
-                mapping.get("p" + i + "_" + k).point(new Point(k, 1, i));
+                gates.get(k).move(k, 0, i);
             }
         }
 
-        int bits = circuit.inputs().get("s").size();
-        // move selection bits
-        for (int i = 0; i < bits; i++)
-            mapping.get("s" + i).point(new Point(size + i, 0, 0));
-
-        // move negations
-        for (int i = 0; i < bits; i++)
-            mapping.get("n" + i).point(new Point(size + i, 1, 0));
-
-        // move and gates of selector
-        for (int i = 0; i < 1 << bits; i++)
-            mapping.get("a" + i).point(new Point(size + i, 2, 0));
-
-        // move combination
-        for (int i = 0; i < size; i++)
-            mapping.get("c" + i).point(new Point(i, 2, 0));
-
         // move outputs
-        for (int i = 0; i < size; i++)
-            mapping.get("o" + i).point(new Point(i, 3, 0));
+        List<Gate> o = circuit.outputs().get("o");
+        for (int i = 0; i < o.size(); i++)
+            o.get(i).move(i, 5, 0);
     }
 }
