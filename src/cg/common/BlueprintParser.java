@@ -34,9 +34,16 @@ public class BlueprintParser
                     outputs.add(asInt(c.getNumber("id")));
                 }
             }
-            gates.add(new Gate(operation, id, color, outputs));
+            Point p = new Point(
+                    asInt(child.get("pos").getNumber("x")),
+                    asInt(child.get("pos").getNumber("y")),
+                    asInt(child.get("pos").getNumber("z"))
+            );
+            gates.add(new Gate(operation, id, color, outputs, p));
         }
-        return new BluePrint(gates);
+        BluePrint bp = new BluePrint(gates);
+        bp.normalize();
+        return bp;
     }
 
     private static int asInt(JsonNumber num)

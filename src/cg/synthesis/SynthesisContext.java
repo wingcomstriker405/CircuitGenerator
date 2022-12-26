@@ -49,7 +49,8 @@ public class SynthesisContext
                     new ArrayList<>(gate.outputs()
                             .stream()
                             .map(i -> ids[i])
-                            .toList())
+                            .toList()),
+                    gate.point()
             ));
         }
 
@@ -81,7 +82,8 @@ public class SynthesisContext
                     gate.outputs()
                             .stream()
                             .map(mapping::get)
-                            .toList()
+                            .toList(),
+                    gate.point()
             ));
         }
         return new BluePrint(normalized);

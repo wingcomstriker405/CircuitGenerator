@@ -2,10 +2,9 @@ package cg.component;
 
 import cg.common.*;
 import cg.synthesis.Circuit;
-import cg.synthesis.SynthesisContext;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CarryLookAheadAdder extends DynamicComponent
 {
@@ -98,5 +97,36 @@ public class CarryLookAheadAdder extends DynamicComponent
 
         // connect carry output
         connect("c", size, "r", 0);
+    }
+
+    @Override
+    protected void layout(Circuit circuit, Map<String, Gate> mapping, Map<String, Circuit> circuits)
+    {
+        List<Gate> a = circuit.inputs().get("a");
+        List<Gate> b = circuit.inputs().get("b");
+        List<Gate> v = circuit.outputs().get("v");
+        int size = a.size();
+        int max = size + 6;
+        for (int i = 0; i < size; i++)
+        {
+            a.get(i).point(new Point(i, 0, 0));
+            b.get(i).point(new Point(i, 0, 1));
+            v.get(i).point(new Point(i, max, 0));
+
+            mapping.get("s" + i).point(new Point(i, 1, 0));
+            mapping.get("g" + i).point(new Point(i, 2, 0));
+            mapping.get("p" + i).point(new Point(i, 3, 0));
+            mapping.get("c" + i).point(new Point(i, 4, 0));
+
+            for (int j = 0; j <= size; j++)
+            {
+                if(mapping.containsKey("t" + (i + 1) + "_" + j))
+                {
+                    mapping.get("t" + (i + 1) + "_" + j).point(new Point(i, 5 + j, 0));
+                }
+            }
+        }
+        circuit.outputs().get("r").get(0).point(new Point(size, max, 0));
+        mapping.get("c" + size).point(new Point(size, max - 1, 0));
     }
 }

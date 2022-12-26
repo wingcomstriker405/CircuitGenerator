@@ -1,5 +1,8 @@
 import cg.common.Gate;
 import cg.common.LogicComponent;
+import cg.component.CarryLookAheadAdder;
+import cg.component.FullAdder;
+import cg.component.Register;
 import cg.component.RippleCarryAdder;
 import cg.synthesis.Circuit;
 import cg.synthesis.SynthesisContext;
@@ -7,8 +10,8 @@ import cg.synthesis.SynthesisContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.List;
+import java.util.Map;
 
 public class Main
 {
@@ -16,9 +19,12 @@ public class Main
     {
         // this path can be substituted for an actual blueprint file so the creation can be built directly
         Path of = Path.of("blueprint.json");
-        LogicComponent component = new RippleCarryAdder("my adder", 8);
+//        LogicComponent component = new CarryLookAheadAdder("my adder", 32);
+//        LogicComponent component = new FullAdder("my adder");
+
+        LogicComponent component = new Register("my register", 64);
         String build = build(component);
-        Files.writeString(of, build);
+        Files.writeString(of, build.replaceAll("[ \r\t\n]", ""));
     }
 
     public static String build(LogicComponent component)
@@ -26,29 +32,13 @@ public class Main
         SynthesisContext context = new SynthesisContext();
         Circuit synthesise = component.synthesise(context);
 
-        Set<Integer> removed = new HashSet<>();
+        getRandomizedColor(synthesise.inputs());
+        getRandomizedColor(synthesise.outputs());
 
-        List<Gate> inputs = getRandomizedColor(removed, synthesise.inputs());
-        List<Gate> outputs = getRandomizedColor(removed, synthesise.outputs());
-
-        List<String> generated = new ArrayList<>();
-        IntStream.range(0, inputs.size())
-                .mapToObj(i -> inputs.get(i).generate(i, 0, 0))
-                .forEach(generated::add);
-
-        int couter = 0;
-        for (Gate gate : synthesise.gates())
-        {
-            if (!removed.contains(gate.id()))
-            {
-                generated.add(gate.generate(couter, 1, 0));
-                couter++;
-            }
-        }
-
-        IntStream.range(0, outputs.size())
-                .mapToObj(i -> outputs.get(i).generate(i, 2, 0))
-                .forEach(generated::add);
+        List<String> generated = synthesise.gates()
+                .stream()
+                .map(Gate::generate)
+                .toList();
 
         String prefix = """
                 {
@@ -68,19 +58,16 @@ public class Main
         return prefix + text + suffix;
     }
 
-    private static List<Gate> getRandomizedColor(Set<Integer> removed, Map<String, List<Gate>> gates)
+    private static void getRandomizedColor(Map<String, List<Gate>> gates)
     {
-        List<Gate> changed = new ArrayList<>();
         for (Map.Entry<String, List<Gate>> entry : gates.entrySet())
         {
             String color = getRandom();
             for (Gate gate : entry.getValue())
             {
-                changed.add(new Gate(gate.op(), gate.id(), color, gate.outputs()));
-                removed.add(gate.id());
+                gate.color(color);
             }
         }
-        return changed;
     }
 
     private static String getRandom()
