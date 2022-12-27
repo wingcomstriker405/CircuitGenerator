@@ -9,117 +9,152 @@ public class PassThroughOptimizer
 {
     public static void check(Set<Integer> io, List<Gate> gates)
     {
-        gates.sort(Comparator.comparingInt(Gate::id));
+        new PassThroughOptimizer(io, gates).optimize();
+    }
 
-        List<List<Gate>> in = new ArrayList<>();
-        List<List<Gate>> out = new ArrayList<>();
+    private record Entry(Gate g, Set<Integer> in, Set<Integer> out) { }
 
-        // prepare the input lists
-        for (int i = 0; i < gates.size(); i++)
+    private final Set<Integer> io;
+    private final List<Gate> gates;
+    private final Map<Integer, Entry> entries = new HashMap<>();
+    private PassThroughOptimizer(Set<Integer> io, List<Gate> gates)
+    {
+        this.io = io;
+        this.gates = gates;
+        for (Gate gate : gates)
         {
-            in.add(new ArrayList<>());
-            out.add(new ArrayList<>());
+            this.entries.put(gate.id(), new Entry(gate, new HashSet<>(), new HashSet<>(gate.outputs())));
         }
 
-        // compute the inputs of the gates
-        for (Gate g : gates)
+        for (Gate gate : gates)
         {
-            List<Integer> outputs = g.outputs();
-            for (Integer output : outputs)
+            for (Integer output : gate.outputs())
             {
-                in.get(gates.get(output).id()).add(g);
+                this.entries.get(output).in.add(gate.id());
             }
-            out.get(g.id()).addAll(outputs.stream().map(gates::get).toList());
+        }
+    }
+
+    private void optimize()
+    {
+        int counter = 0;
+        int size;
+        for (int i = 0; i < 10; i++)
+        {
+            do
+            {
+                size = this.entries.size();
+
+                optimizePass();
+                optimizeEnds();
+
+                filterGates();
+                counter++;
+            }
+            while (size != this.entries.size());
         }
 
+        System.out.println("PASSES: " + counter);
+
+        finish();
+    }
+
+    private void optimizePass()
+    {
         Set<Operation> neutral = Set.of(
                 Operation.AND,
                 Operation.OR,
                 Operation.XOR
         );
 
-        Set<Integer> removed = new HashSet<>();
-        boolean changed;
-        do
+        for (Gate gate : this.gates)
         {
-            changed = false;
-
-
-            List<Integer> ends = new ArrayList<>();
-            for (Gate gate : gates)
+            if(this.entries.containsKey(gate.id()))
             {
-                boolean inEmpty = in.get(gate.id()).isEmpty();
-                boolean outEmpty = out.get(gate.id()).isEmpty();
-                if(!io.contains(gate.id()) && !removed.contains(gate.id()))
+                Entry e = this.entries.get(gate.id());
+                if(neutral.contains(gate.op()) && e.in.size() == 1)
                 {
-                    if(outEmpty)
+                    if(isRemovable(gate.id()))
                     {
-                        for (Gate gate1 : in.get(gate.id()))
+                        for (Integer a : e.in)
                         {
-                            gate1.outputs().removeIf(i -> i == gate.id());
-                            out.get(gate1.id()).removeIf(g -> g.id() == gate.id());
+                            Entry p = this.entries.get(a);
+                            p.out.addAll(e.out);
+                            for (Integer integer : e.out)
+                                this.entries.get(integer).in.add(p.g.id());
+                            remove(gate.id());
                         }
-                        removed.add(gate.id());
                     }
-                    else if(inEmpty)
+                    else
                     {
-                        ends.add(gate.id());
+                        if(e.out.size() == 2)
+                            System.out.println("HERE");
                     }
-                }
-            }
-
-            if(ends.size() > 1)
-            {
-                Gate first = gates.get(ends.get(0));
-                for (int i = 1; i < ends.size(); i++)
-                {
-                    Gate current = gates.get(ends.get(i));
-                    first.outputs().addAll(current.outputs());
-                    out.get(first.id()).addAll(out.get(current.id()));
-                    // remove the current gate from all the input lists
-                    for (Integer output : current.outputs())
-                    {
-                        in.get(output).removeIf(g -> g.id() == current.id());
-                        in.get(output).add(first);
-                    }
-                    removed.add(current.id());
-                }
-                changed = true;
-            }
-
-            for (int i = 0; i < gates.size(); i++)
-            {
-                Gate current = gates.get(i);
-                if(removed.contains(current.id()) || io.contains(current.id())) continue;
-
-                if (in.get(current.id()).size() == 1 && !out.get(current.id()).isEmpty() && neutral.contains(current.op()))
-                {
-                    // change the gate itself
-                    Gate gate = in.get(current.id()).get(0);
-                    // remove the current gate
-                    gate.outputs().removeIf(k -> k == current.id());
-                    // add the outputs
-                    gate.outputs().addAll(current.outputs());
-
-                    // update the in and out lists
-
-                    // - remove the current gate
-                    for (Integer output : current.outputs())
-                        in.get(output).remove(current);
-                    out.get(gate.id()).remove(current);
-
-                    // - add the previous gate to the current outputs
-                    for (Integer output : current.outputs())
-                        in.get(output).add(gate);
-                    out.get(gate.id()).addAll(current.outputs().stream().map(gates::get).toList());
-
-                    removed.add(current.id());
-                    changed = true;
                 }
             }
         }
-        while (changed);
+    }
 
-        gates.removeIf(g -> removed.contains(g.id()));
+    private Gate fused;
+
+    private void optimizeEnds()
+    {
+        for (Gate gate : this.gates)
+        {
+            if(this.entries.containsKey(gate.id()))
+            {
+                Entry e = this.entries.get(gate.id());
+                if(isRemovable(gate.id()))
+                {
+                    if(e.out.isEmpty())
+                    {
+                        remove(gate.id());
+                    }
+                    else if(e.in.isEmpty())
+                    {
+                        if(this.fused == null)
+                        {
+                            this.fused = e.g;
+                        }
+                        else if(e.g.id() != this.fused.id())
+                        {
+                            for (Integer output : e.out)
+                                this.entries.get(output).in.add(this.fused.id());
+                            this.fused.outputs().addAll(gate.outputs());
+                            remove(gate.id());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isRemovable(int id)
+    {
+        return !this.io.contains(id);
+    }
+
+    private void remove(int id)
+    {
+        Entry removed = this.entries.remove(id);
+        for (Integer integer : removed.in)
+        {
+            this.entries.get(integer).out.remove(removed.g.id());
+        }
+
+        for (Integer integer : removed.out)
+        {
+            this.entries.get(integer).in.remove(removed.g.id());
+        }
+    }
+
+    private void filterGates()
+    {
+        this.gates.removeIf(g -> !this.entries.containsKey(g.id()));
+    }
+
+    private void finish()
+    {
+        this.gates.forEach(g -> g.outputs(new ArrayList<>(this.entries.get(g.id()).out)));
     }
 }
