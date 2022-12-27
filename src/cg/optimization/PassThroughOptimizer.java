@@ -39,12 +39,53 @@ public class PassThroughOptimizer
         );
 
         Set<Integer> removed = new HashSet<>();
-        int optimize = 0;
         boolean changed;
         do
         {
-
             changed = false;
+
+
+            List<Integer> ends = new ArrayList<>();
+            for (Gate gate : gates)
+            {
+                boolean inEmpty = in.get(gate.id()).isEmpty();
+                boolean outEmpty = out.get(gate.id()).isEmpty();
+                if(!io.contains(gate.id()) && !removed.contains(gate.id()))
+                {
+                    if(outEmpty)
+                    {
+                        for (Gate gate1 : in.get(gate.id()))
+                        {
+                            gate1.outputs().removeIf(i -> i == gate.id());
+                            out.get(gate1.id()).removeIf(g -> g.id() == gate.id());
+                        }
+                        removed.add(gate.id());
+                    }
+                    else if(inEmpty)
+                    {
+                        ends.add(gate.id());
+                    }
+                }
+            }
+
+            if(ends.size() > 1)
+            {
+                Gate first = gates.get(ends.get(0));
+                for (int i = 1; i < ends.size(); i++)
+                {
+                    Gate current = gates.get(ends.get(i));
+                    first.outputs().addAll(current.outputs());
+                    out.get(first.id()).addAll(out.get(current.id()));
+                    // remove the current gate from all the input lists
+                    for (Integer output : current.outputs())
+                    {
+                        in.get(output).removeIf(g -> g.id() == current.id());
+                        in.get(output).add(first);
+                    }
+                    removed.add(current.id());
+                }
+                changed = true;
+            }
 
             for (int i = 0; i < gates.size(); i++)
             {
@@ -73,7 +114,6 @@ public class PassThroughOptimizer
                     out.get(gate.id()).addAll(current.outputs().stream().map(gates::get).toList());
 
                     removed.add(current.id());
-                    optimize++;
                     changed = true;
                 }
             }
