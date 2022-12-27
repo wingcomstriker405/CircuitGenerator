@@ -25,8 +25,6 @@ public class CircuitBuilder
         SynthesisContext context = new SynthesisContext(colorings);
         Circuit synthesise = component.synthesise(context);
 
-        synthesise.gates().forEach(g -> g.color("000000"));
-
         System.out.println("SYNTHESES RESULTS");
         System.out.println("GATES: " + synthesise.gates().size());
         System.out.println("CONNECTIONS: " + synthesise.gates().stream().map(Gate::outputs).mapToInt(List::size).sum());
