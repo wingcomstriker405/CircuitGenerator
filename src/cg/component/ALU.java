@@ -135,7 +135,7 @@ public class ALU extends ComplexComponent
         {
             circuits.get(function).move(start, 1, 0);
             BoundingBox of = BoundingBox.of(circuits.get(function).gates());
-            start += of.max().x() - of.min().x();
+            start = of.max().x() + 1;
         }
 
 
