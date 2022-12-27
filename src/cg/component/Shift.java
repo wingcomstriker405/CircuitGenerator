@@ -79,7 +79,7 @@ public class Shift extends DynamicComponent
         List<Gate> a = circuit.inputs().get("a");
         int bits = a.size();
         for (int i = 0; i < a.size(); i++)
-            a.get(i).move(n.size() + i, 0, 0);
+            a.get(i).move(i, 0, 1);
 
 
         dy++;
