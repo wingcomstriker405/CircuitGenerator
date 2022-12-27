@@ -81,6 +81,7 @@ public abstract class ComplexComponent extends LogicComponent
     @Override
     public Circuit synthesise(SynthesisContext context)
     {
+        context.push(getName());
         // synthesize all the components
         Map<String, Circuit> circuits = this.components.entrySet()
                 .stream()
@@ -108,6 +109,8 @@ public abstract class ComplexComponent extends LogicComponent
                 .flatMap(List::stream)
                 .toList());
 
+        colorize(context, gates);
+
         // retrieve io gates
         Map<String, List<Gate>> inputs = circuits.get("<").outputs();
         Map<String, List<Gate>> outputs = circuits.get(">").inputs();
@@ -118,6 +121,7 @@ public abstract class ComplexComponent extends LogicComponent
                 gates
         );
         layout(circuit, circuits);
+        context.pop();
         return circuit;
     }
 
