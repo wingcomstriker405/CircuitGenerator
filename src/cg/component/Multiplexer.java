@@ -46,7 +46,7 @@ public class Multiplexer extends ComplexComponent
         connect("<", "s",  "selector", "i");
 
         // wire selector and selection
-        connect("selector", "o", "selection", "s");
+        connect("selector", "o", 0, "selection", "s", 0, inputs);
     }
 
     private static List<Vec> constructInputs(int size, int inputs, int bits)
