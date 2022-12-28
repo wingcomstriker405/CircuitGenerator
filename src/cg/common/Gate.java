@@ -10,11 +10,27 @@ public class Gate
     private List<Integer> outputs;
     private Point point;
 
+    /**
+     * Alternative constructor that defaults the point to (0, 0, 0).
+     * @param op the operation of the gate
+     * @param id the unique id that identifies the gate
+     * @param color the color as a six letter hex string
+     * @param outputs the ids of all the gates the gate outputs to
+     * @see Operation
+     */
     public Gate(Operation op, int id, String color, List<Integer> outputs)
     {
         this(op, id, color, outputs, new Point(0, 0, 0));
     }
 
+    /**
+     * @param op the operation of the gate
+     * @param id the unique id that identifies the gate
+     * @param color the color as a six letter hex string
+     * @param outputs the ids of all the gates the gate outputs to
+     * @param point the position of the gate
+     * @see Operation
+     */
     public Gate(Operation op, int id, String color, List<Integer> outputs, Point point)
     {
         this.op = op;
@@ -73,6 +89,9 @@ public class Gate
 
 
 
+    /**
+     * Generates the string representation of the gate for blueprint files.
+     */
     public String generate()
     {
         return """
@@ -107,6 +126,12 @@ public class Gate
                 ;
     }
 
+    /**
+     * Moves the gate by the specified amount.
+     * @param dx the amount to move in the x direction
+     * @param dy the amount to move in the y direction
+     * @param dz the amount to move in the z direction
+     */
     public void move(int dx, int dy, int dz)
     {
         point(point().move(dx, dy, dz));
