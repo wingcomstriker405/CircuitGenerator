@@ -8,6 +8,11 @@ import java.util.stream.Collectors;
 
 import static cg.common.Assert.assertThat;
 
+/**
+ * Represents a component that only connects existing components and does not add any functional gates itself.
+ * Due to the addition of the {@link DynamicComponent} with more fine-grained control and the restriction of no functional gates
+ * this component is only useful for a limited number of components.
+ */
 public abstract class ComplexComponent extends LogicComponent
 {
     private record Dock(LogicComponent component, Vec vec, int offset)
@@ -24,6 +29,11 @@ public abstract class ComplexComponent extends LogicComponent
     private final List<Connection> connections = new ArrayList<>();
 
 
+    /**
+     * @param name the name of the component
+     * @param inputs the inputs
+     * @param outputs the outputs
+     */
     protected ComplexComponent(String name, List<Vec> inputs, List<Vec> outputs)
     {
         super(name);
@@ -33,12 +43,23 @@ public abstract class ComplexComponent extends LogicComponent
         this.components.put(">", this.out);
     }
 
+    /**
+     * Allows to add a component to this component.
+     * @param component the component to add
+     */
     protected void add(LogicComponent component)
     {
         assertThat(!this.components.containsKey(component.getName()), "Component with name '" + component.getName() + "' already added!");
         this.components.put(component.getName(), component);
     }
 
+    /**
+     * Connects each gate of the specified output to the specified input. The length of the input / output need to be the same.
+     * @param startName the name of the first component
+     * @param startId the name of the output of that component
+     * @param endName the name of the second component
+     * @param endId the name of the input of that component
+     */
     protected void connect(String startName, String startId, String endName, String endId)
     {
         LogicComponent sc = get(startName);
@@ -51,6 +72,14 @@ public abstract class ComplexComponent extends LogicComponent
         this.connections.add(new Connection(s, e, ss));
     }
 
+    /**
+     * Connect a specified number of gates in a similar manner as the other connect method does.
+     * @param startName the start component
+     * @param startId the output name
+     * @param endName the end component
+     * @param endId the input name
+     * @see #connect(String, String, String, String)
+     */
     protected void connect(String startName, String startId, int startOffset, String endName, String endId, int endOffset, int amount)
     {
         LogicComponent sc = get(startName);
@@ -60,24 +89,42 @@ public abstract class ComplexComponent extends LogicComponent
         this.connections.add(new Connection(s, e, amount));
     }
 
+    /**
+     * Returns a component with a given name.
+     * @param name the name
+     * @return the component
+     */
     protected LogicComponent get(String name)
     {
         assertThat(this.components.containsKey(name), "No component with name '" + name + "'!");
         return this.components.get(name);
     }
 
+    /**
+     * Returns the outputs that the component has.
+     * @return the outputs
+     */
     @Override
     public List<Vec> getOutputs()
     {
         return this.out.getOutputs();
     }
 
+    /**
+     * Returns the inputs that the component has.
+     * @return the inputs
+     */
     @Override
     public List<Vec> getInputs()
     {
         return this.in.getInputs();
     }
 
+    /**
+     * Synthesizes a new {@link Circuit}.
+     * @param context the synthesis context
+     * @return the circuit
+     */
     @Override
     public Circuit synthesise(SynthesisContext context)
     {
@@ -125,5 +172,10 @@ public abstract class ComplexComponent extends LogicComponent
         return circuit;
     }
 
+    /**
+     * A callback to position the components.
+     * @param circuit the synthesized circuit
+     * @param circuits the contained circuits
+     */
     protected abstract void layout(Circuit circuit, Map<String, Circuit> circuits);
 }
