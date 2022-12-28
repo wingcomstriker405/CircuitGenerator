@@ -11,8 +11,20 @@ import java.util.List;
 
 import static cg.common.Assert.assertThat;
 
+/**
+ * A parser to load a blueprint file. The parser assumes that all the parts in the blueprint file are logic gates.
+ */
 public class BlueprintParser
 {
+    private BlueprintParser()
+    {
+    }
+
+    /**
+     * Parses a blueprint into a {@link BluePrint}.
+     * @param path the path of the file
+     * @return the parsed blueprint
+     */
     public static BluePrint parse(String path)
     {
         List<Gate> gates = new ArrayList<>();
