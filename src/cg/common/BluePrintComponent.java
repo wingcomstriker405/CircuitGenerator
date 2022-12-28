@@ -10,12 +10,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Represents a component that is provided by a blueprint file.
+ * This serves for injecting hand build components into the generator.
+ */
 public abstract class BluePrintComponent extends LogicComponent
 {
     private final String file;
     private final List<Pin> inputs;
     private final List<Pin> outputs;
 
+    /**
+     * @param name    the name of the component
+     * @param file    the blueprint file
+     * @param inputs  the input pins
+     * @param outputs the output pins
+     * @see Pin
+     */
     protected BluePrintComponent(String name, String file, List<Pin> inputs, List<Pin> outputs)
     {
         super(name);
@@ -24,25 +35,40 @@ public abstract class BluePrintComponent extends LogicComponent
         this.outputs = outputs;
     }
 
+    /**
+     * Returns the outputs that the blueprint has.
+     *
+     * @return the outputs
+     */
     @Override
     public List<Vec> getOutputs()
     {
         return Collections.unmodifiableList(this.outputs);
     }
 
+    /**
+     * Returns the inputs that the blueprint has.
+     *
+     * @return the inputs
+     */
     @Override
     public List<Vec> getInputs()
     {
         return Collections.unmodifiableList(this.inputs);
     }
 
+    /**
+     * Synthesizes a new instance of the blueprint.
+     *
+     * @return the outputs
+     */
     @Override
     public Circuit synthesise(SynthesisContext context)
     {
         return instantiate(context, this.file, this.inputs, this.outputs);
     }
 
-    public Circuit instantiate(SynthesisContext context, String path, List<Pin> ins, List<Pin> outs)
+    private Circuit instantiate(SynthesisContext context, String path, List<Pin> ins, List<Pin> outs)
     {
         BluePrint bp = context.load(path);
         int[] ids = IntStream.range(0, bp.gates().size())
