@@ -2,8 +2,16 @@ package cg.common;
 
 import java.util.List;
 
+/**
+ * Represents the bounding box of an object.
+ */
 public record BoundingBox(Point min, Point max)
 {
+    /**
+     * Creates a bounding box that contains all the gates.
+     * @param gates the gates
+     * @return the bounding box
+     */
     public static BoundingBox of(List<Gate> gates)
     {
         return gates.stream()
@@ -13,11 +21,22 @@ public record BoundingBox(Point min, Point max)
                 .orElseThrow();
     }
 
+    /**
+     * Creates a bounding box for one point.
+     * @param point the point
+     * @return the bounding box
+     */
     public static BoundingBox of(Point point)
     {
         return new BoundingBox(point, point);
     }
 
+    /**
+     * Merges two bounding boxes. The resulting box will contain both bounding boxes.
+     * @param b1 the first bounding box
+     * @param b2 the second bounding box
+     * @return the merged bounding box
+     */
     public static BoundingBox merge(BoundingBox b1, BoundingBox b2)
     {
         return new BoundingBox(
