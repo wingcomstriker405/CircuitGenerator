@@ -1,5 +1,8 @@
 package cg.common;
 
+/**
+ * Represents the mode of a gate.
+ */
 public enum Operation
 {
     AND(0),
