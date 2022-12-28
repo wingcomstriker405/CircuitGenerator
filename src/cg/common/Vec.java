@@ -1,10 +1,17 @@
 package cg.common;
 
+/**
+ * Represents a vector of gates.
+ */
 public class Vec
 {
     private final String name;
     private final int size;
 
+    /**
+     * @param name the name of the vector
+     * @param size the size of the vector
+     */
     public Vec(String name, int size)
     {
         this.name = name;
